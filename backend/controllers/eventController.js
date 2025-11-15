@@ -1,81 +1,109 @@
 const Event = require('../models/Event');
+const EventLog = require('../models/EventLog');
+const dayjs = require('../utils/tz');
 
+// 🟢 Helper: Safe parse
+function parseWithTZ(iso, tz) {
+  const d = dayjs(iso).tz(tz);
+  if (!d.isValid()) {
+    console.error("Invalid Date Received:", iso, "Timezone:", tz);
+  }
+  return d;
+}
 
 exports.createEvent = async (req, res) => {
-/* expected body:
-profiles: [id],
-timezone: 'Asia/Kolkata',
-startISO: '2025-10-12T12:00',
-endISO: '2025-10-12T14:00'
-*/
-const { profiles, timezone, startISO, endISO } = req.body;
-if (!profiles || !profiles.length) return res.status(400).json({ message: 'Profiles required' });
-if (!timezone) return res.status(400).json({ message: 'Timezone required' });
+  const { profiles, timezone, startISO, endISO } = req.body;
 
+  if (!profiles || !profiles.length)
+    return res.status(400).json({ message: "Profiles required" });
 
-const start = dayjs.tz(startISO, timezone);
-const end = dayjs.tz(endISO, timezone);
-if (end.isBefore(start)) return res.status(400).json({ message: 'End must be after start' });
+  if (!timezone)
+    return res.status(400).json({ message: "Timezone required" });
 
+  // 🟢 FIXED PARSING
+  const start = parseWithTZ(startISO, timezone);
+  const end = parseWithTZ(endISO, timezone);
 
-const ev = new Event({
-profiles,
-timezone,
-startTimeUTC: start.toDate(),
-endTimeUTC: end.toDate(),
-createdAtUTC: new Date(),
-updatedAtUTC: new Date()
-});
-await ev.save();
-res.json(ev);
+  if (!start?.isValid() || !end?.isValid()) {
+    return res.status(400).json({ message: "Invalid date format received" });
+  }
+
+  if (end.isBefore(start))
+    return res.status(400).json({ message: "End must be after start" });
+
+  const ev = new Event({
+    profiles,
+    timezone,
+    startTimeUTC: start.toDate(),
+    endTimeUTC: end.toDate(),
+    createdAtUTC: new Date(),
+    updatedAtUTC: new Date()
+  });
+
+  await ev.save();
+  return res.json(ev);
 };
 
 
 exports.getEvents = async (req, res) => {
-const { profileId } = req.query;
-const filter = {};
-if (profileId) filter.profiles = profileId;
-const events = await Event.find(filter).populate('profiles').lean();
-res.json(events);
+  const { profileId } = req.query;
+  const filter = {};
+  if (profileId) filter.profiles = profileId;
+
+  const events = await Event.find(filter).populate("profiles").lean();
+  res.json(events);
 };
 
 
 exports.updateEvent = async (req, res) => {
-const { id } = req.params;
-const { profiles, timezone, startISO, endISO, updatedBy } = req.body;
-const event = await Event.findById(id);
-if (!event) return res.status(404).json({ message: 'Not found' });
+  const { id } = req.params;
+  const { profiles, timezone, startISO, endISO, updatedBy } = req.body;
 
+  const event = await Event.findById(id);
+  if (!event) return res.status(404).json({ message: "Event not found" });
 
-const previous = {
-profiles: event.profiles,
-timezone: event.timezone,
-startTimeUTC: event.startTimeUTC,
-endTimeUTC: event.endTimeUTC,
-};
+  const previous = {
+    profiles: event.profiles,
+    timezone: event.timezone,
+    startTimeUTC: event.startTimeUTC,
+    endTimeUTC: event.endTimeUTC,
+  };
 
+  if (profiles) event.profiles = profiles;
+  if (timezone) event.timezone = timezone;
 
-if (profiles) event.profiles = profiles;
-if (timezone) event.timezone = timezone;
-if (startISO) event.startTimeUTC = dayjs.tz(startISO, timezone || event.timezone).toDate();
-if (endISO) event.endTimeUTC = dayjs.tz(endISO, timezone || event.timezone).toDate();
+  // 🟢 FIXED PARSING FOR UPDATE ALSO
+  if (startISO) {
+    const start = parseWithTZ(startISO, timezone || event.timezone);
+    if (!start.isValid()) return res.status(400).json({ message: "Invalid start time" });
+    event.startTimeUTC = start.toDate();
+  }
 
+  if (endISO) {
+    const end = parseWithTZ(endISO, timezone || event.timezone);
+    if (!end.isValid()) return res.status(400).json({ message: "Invalid end time" });
+    event.endTimeUTC = end.toDate();
+  }
 
-event.updatedAtUTC = new Date();
-await event.save();
+  event.updatedAtUTC = new Date();
+  await event.save();
 
+  const current = {
+    profiles: event.profiles,
+    timezone: event.timezone,
+    startTimeUTC: event.startTimeUTC,
+    endTimeUTC: event.endTimeUTC,
+  };
 
-const current = {
-profiles: event.profiles,
-timezone: event.timezone,
-startTimeUTC: event.startTimeUTC,
-endTimeUTC: event.endTimeUTC,
-};
+  const log = new EventLog({
+    eventId: event._id,
+    updatedBy,
+    previous,
+    current,
+    updatedAtUTC: new Date(),
+  });
 
+  await log.save();
 
-const log = new EventLog({ eventId: event._id, updatedBy, previous, current, updatedAtUTC: new Date() });
-await log.save();
-
-
-res.json({ event, log });
+  return res.json({ event, log });
 };
