@@ -67,8 +67,8 @@ This system supports multi-profile management, timezone conversions, event histo
 - React  
 - Redux Toolkit  
 - React Router  
-- Moment / Day.js (for timezone handling)  
-- Tailwind / CSS  
+- Day.js (for timezone handling)  
+- CSS  
 
 ### **Backend**
 - Node.js  
