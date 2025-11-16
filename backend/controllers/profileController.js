@@ -13,10 +13,3 @@ exports.listProfiles = async (req, res) => {
 const profiles = await Profile.find().lean();
 res.json(profiles);
 };
-
-exports.updateTimezone = async (req, res) => {
-const { id } = req.params;
-const { timezone } = req.body;
-const profile = await Profile.findByIdAndUpdate(id, { timezone }, { new: true });
-res.json(profile);
-};
