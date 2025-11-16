@@ -11,10 +11,7 @@ export const createProfile = createAsyncThunk('profiles/create', async (name) =>
   return res.data;
 });
 
-export const updateTimezone = createAsyncThunk('profiles/updateTZ', async ({ id, timezone }) => {
-  const res = await api.put(`/profiles/${id}/timezone`, { timezone });
-  return res.data;
-});
+
 
 const slice = createSlice({
   name: 'profiles',
@@ -24,10 +21,7 @@ const slice = createSlice({
     builder
       .addCase(fetchProfiles.fulfilled, (state, action) => { state.list = action.payload; })
       .addCase(createProfile.fulfilled, (state, action) => { state.list.push(action.payload); })
-      .addCase(updateTimezone.fulfilled, (state, action) => {
-        const idx = state.list.findIndex(p => p._id === action.payload._id);
-        if (idx >= 0) state.list[idx] = action.payload;
-      });
+      
   }
 });
 
