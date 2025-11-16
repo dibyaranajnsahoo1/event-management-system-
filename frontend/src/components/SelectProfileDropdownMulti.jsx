@@ -32,12 +32,10 @@ export default function SelectProfileDropdownMulti({ value, onChange }) {
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  // Filter profiles
   const filtered = profiles.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // ⭐ Prevent duplicate names
   const handleAdd = async () => {
     const name = newName.trim();
     if (!name) return;
