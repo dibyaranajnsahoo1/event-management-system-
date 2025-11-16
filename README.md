@@ -226,7 +226,7 @@ GET /api/logs/:eventId
 
 - Frontend deployed on **Vercel**  
 - Backend deployed on **Render**  
-- Make sure environment variables are correctly set  
+- Environment variables are correctly set  
 - Use **CORS** for cross-origin access  
 
 ---
