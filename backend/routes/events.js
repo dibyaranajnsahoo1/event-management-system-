@@ -7,5 +7,4 @@ router.post('/', ctrl.createEvent);
 router.get('/', ctrl.getEvents);
 router.put('/:id', ctrl.updateEvent);
 
-
 module.exports = router;

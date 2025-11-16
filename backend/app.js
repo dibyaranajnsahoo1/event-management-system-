@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 app.use('/api/profiles', profilesRoute);
 app.use('/api/events', eventsRoute);
-app.use('/api/events', logsRoute); // logs uses /api/events/:id/logs
+app.use('/api/events', logsRoute); 
 
 
 app.get('/', (req, res) => res.json({ ok: true }));

@@ -2,7 +2,8 @@ const Event = require('../models/Event');
 const EventLog = require('../models/EventLog');
 const dayjs = require('../utils/tz');
 
-// 🟢 Helper: Safe parse
+
+
 function parseWithTZ(iso, tz) {
   const d = dayjs(iso).tz(tz);
   if (!d.isValid()) {
@@ -20,7 +21,6 @@ exports.createEvent = async (req, res) => {
   if (!timezone)
     return res.status(400).json({ message: "Timezone required" });
 
-  // 🟢 FIXED PARSING
   const start = parseWithTZ(startISO, timezone);
   const end = parseWithTZ(endISO, timezone);
 
@@ -72,7 +72,6 @@ exports.updateEvent = async (req, res) => {
   if (profiles) event.profiles = profiles;
   if (timezone) event.timezone = timezone;
 
-  // 🟢 FIXED PARSING FOR UPDATE ALSO
   if (startISO) {
     const start = parseWithTZ(startISO, timezone || event.timezone);
     if (!start.isValid()) return res.status(400).json({ message: "Invalid start time" });

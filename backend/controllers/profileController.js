@@ -9,12 +9,10 @@ await p.save();
 res.json(p);
 };
 
-
 exports.listProfiles = async (req, res) => {
 const profiles = await Profile.find().lean();
 res.json(profiles);
 };
-
 
 exports.updateTimezone = async (req, res) => {
 const { id } = req.params;
