@@ -1,0 +1,80 @@
+.tz-container {
+  position: relative;
+  width: 100%;
+}
+.tz-select-box {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tz-select-box:hover {
+  background: var(--purple);
+  color: #fff;
+}
+.tz-caret {
+  margin-left: 8px;
+}
+.tz-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 240px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  z-index: 200;
+}
+.tz-search-wrapper {
+  position: relative;
+}
+.tz-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 9px;
+  pointer-events: none;
+}
+.tz-input {
+  width: 100%;
+  padding: 9px 12px;
+  padding-left: 36px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+.tz-input:hover {
+  background: #f3e8ff;
+}
+.tz-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+.tz-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.2s;
+  margin-bottom: 4px;
+}
+.tz-item:hover {
+  background: var(--purple);
+  color: #fff;
+}
+.tz-selected {
+  background: var(--purple);
+  color: #fff;
+}
+.tz-check {
+  width: 20px;
+  font-weight: 700;
+  text-align: center;
+}

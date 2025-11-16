@@ -1,130 +1,120 @@
 import React, { useState } from "react";
-import Select from "react-select";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { fetchEvents } from "../features/events/eventsSlice";
 import api from "../api/api";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import SelectProfileDropdownMulti from "./SelectProfileDropdownMulti";
+import TimeZoneSelector from "./TimeZoneSelector";
+import DateInput from "./DateInput";
+
+import "./CreateEventPanel.css";
 
 export default function CreateEventPanel() {
-  const profiles = useSelector((s) => s.profiles.list);
   const dispatch = useDispatch();
-  const options = profiles.map((p) => ({ value: p._id, label: p.name }));
 
   const [selected, setSelected] = useState([]);
-  const [timezoneVal, setTimezoneVal] = useState("UTC");
+  const [timezoneVal, setTimezoneVal] = useState("America/New_York");
+
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("09:00");
+
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("10:00");
 
+  const [loading, setLoading] = useState(false);
+
   const handleCreate = async () => {
-    if (!selected.length) return alert("Select at least one profile");
-    if (!startDate || !endDate) return alert("Select start and end date");
+    if (selected.length === 0) {
+      alert("Select at least one profile");
+      return;
+    }
 
-    // ⭐ FIXED: Correct way to convert to timezone
-    const startISO = dayjs(`${startDate}T${startTime}`)
-      .tz(timezoneVal)
-      .toISOString();
+    if (!startDate || !endDate) {
+      alert("Pick both start and end dates");
+      return;
+    }
 
-    const endISO = dayjs(`${endDate}T${endTime}`)
-      .tz(timezoneVal)
-      .toISOString();
+    const startISO = dayjs(`${startDate}T${startTime}`).tz(timezoneVal).toISOString();
+    const endISO = dayjs(`${endDate}T${endTime}`).tz(timezoneVal).toISOString();
 
-    if (dayjs(endISO).isBefore(dayjs(startISO)))
-      return alert("End must be after start");
+    if (dayjs(endISO).isBefore(startISO)) {
+      alert("End must be after start");
+      return;
+    }
 
-    await api.post("/events", {
-      profiles: selected.map((s) => s.value),
-      timezone: timezoneVal,
-      startISO,
-      endISO,
-    });
+    setLoading(true);
 
-    dispatch(fetchEvents());
-    setSelected([]);
-    setStartDate("");
-    setEndDate("");
+    try {
+      await api.post("/events", {
+        profiles: selected.map((p) => p._id),
+        timezone: timezoneVal,
+        startISO,
+        endISO,
+      });
+
+      await dispatch(fetchEvents());
+
+      setSelected([]);
+      setStartDate("");
+      setEndDate("");
+      setStartTime("09:00");
+      setEndTime("10:00");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        padding: 12,
-        borderRadius: 8,
-        background: "#fff",
-      }}
-    >
-      <h3>Create Event</h3>
+    <div className="cep-card">
+      <h3 className="cep-title">Create Event</h3>
 
-      <div style={{ marginBottom: 8 }}>
-        <label>Profiles</label>
-        <Select isMulti options={options} value={selected} onChange={setSelected} />
+      <div className="cep-block">
+        <div className="cep-label">Profiles</div>
+        <SelectProfileDropdownMulti value={selected} onChange={setSelected} />
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        <label>Timezone</label>
-        <select
-          value={timezoneVal}
-          onChange={(e) => setTimezoneVal(e.target.value)}
-          style={{ width: "100%" }}
-        >
-          <option value="UTC">UTC</option>
-          <option value="Asia/Kolkata">Asia/Kolkata</option>
-          <option value="America/New_York">America/New_York</option>
-          <option value="Europe/London">Europe/London</option>
-        </select>
+      <div className="cep-block">
+        <div className="cep-label">Timezone</div>
+        <TimeZoneSelector value={timezoneVal} onChange={setTimezoneVal} />
       </div>
 
-      <div style={{ display: "flex", gap: 8 }}>
-        <div style={{ flex: 7 }}>
-          <label>Start Date</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            style={{ width: "100%" }}
-          />
+      <div className="cep-row">
+        <div className="cep-col-7">
+          <div className="cep-label">Start Date & Time</div>
+          <DateInput value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         </div>
-        <div style={{ flex: 3 }}>
-          <label>Start Time</label>
+        <div className="cep-col-3">
+          <div className="cep-label">&nbsp;</div>
           <input
+            className="cep-input"
             type="time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
-            style={{ width: "100%" }}
           />
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-        <div style={{ flex: 7 }}>
-          <label>End Date</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            style={{ width: "100%" }}
-          />
+      <div className="cep-row">
+        <div className="cep-col-7">
+          <div className="cep-label">End Date & Time</div>
+          <DateInput value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
-        <div style={{ flex: 3 }}>
-          <label>End Time</label>
+        <div className="cep-col-3">
+          <div className="cep-label">&nbsp;</div>
           <input
+            className="cep-input"
             type="time"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
-            style={{ width: "100%" }}
           />
         </div>
       </div>
 
-      <div style={{ marginTop: 12 }}>
-        <button onClick={handleCreate}>+ Create Event</button>
+      <div className="cep-button-wrap">
+        <button className="cep-btn-purple" onClick={handleCreate}>
+          {loading ? "Creating..." : "+ Create Event"}
+        </button>
       </div>
     </div>
   );

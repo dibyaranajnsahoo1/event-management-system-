@@ -1,0 +1,138 @@
+.spd-container {
+  position: relative;
+  width: 240px;
+}
+.spd-select-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.spd-select-box:hover {
+  background: var(--purple);
+  color: #fff;
+}
+.spd-selected-text {
+  font-weight: 600;
+}
+.spd-arrow {
+  color: #888;
+}
+.spd-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 240px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  z-index: 200;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+.spd-search-wrapper {
+  position: relative;
+}
+.spd-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 9px;
+  color: #9CA3AF;
+  font-size: 15px;
+  pointer-events: none;
+}
+.spd-input {
+  width: 100%;
+  padding: 9px 12px;
+  padding-left: 36px;
+  border-radius: 6px;
+  border: none;
+  transition: 0.2s;
+}
+.spd-input2 {
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+ 
+  border: 1px solid rgb(54, 33, 188);
+  transition: 0.2s;
+}
+.spd-input2:focus {
+  outline: blue;
+ 
+}
+.spd-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+.spd-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #111;
+}
+
+.spd-item:hover {
+  background: var(--purple);
+  color: #fff;
+}
+
+.spd-selected {
+  background: var(--purple);
+  color: #fff;
+}
+
+.spd-selected:hover {
+  background: var(--purple);
+}
+
+.spd-check {
+  width: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+.spd-name {
+  font-weight: 600;
+}
+.spd-add-btn {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  
+  transition: 0.2s;
+}
+
+.spd-add-btn:hover {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: #fff;
+}
+
+.spd-add-row {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.spd-plus {
+  font-size: 18px;
+}
+
+.spd-add-text {
+  font-weight: 600;
+}

@@ -1,44 +1,149 @@
-import React, { useState } from 'react';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-import LogsModal from './LogsModal';
-import EditEventModal from './EditEventModal';
+import React, { useState } from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+import EditEventModal from "./EditEventModal";
+import LogsModal from "./LogsModal";
+
+import "./EventCard.css";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export default function EventCard({ event }) {
-  const [showLogs, setShowLogs] = useState(false);
+const UserIcon = () => (
+  <svg width="20" height="20" stroke="#7c3aed" strokeWidth="2" fill="none" viewBox="0 0 24 24">
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+  </svg>
+);
+
+const CalendarIcon = () => (
+  <svg width="15" height="15" stroke="#6b7280" strokeWidth="2" fill="none" viewBox="0 0 24 24">
+    <rect x="3" y="4" width="18" height="18" rx="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+);
+
+const TimeIcon = () => (
+  <svg width="12" height="12" stroke="#6b7280" strokeWidth="2" fill="none" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
+const EditIcon = () => (
+  <svg width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2 2 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+  </svg>
+);
+
+const LogsIcon = () => (
+  <svg width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" viewBox="0 0 24 24">
+    <path d="M9 12h6" />
+    <path d="M9 16h6" />
+    <path d="M9 8h6" />
+    <rect x="4" y="4" width="16" height="16" rx="2" />
+  </svg>
+);
+
+const fmtDate  = (d, tz) => dayjs(d).tz(tz).format("MMM D, YYYY");
+const fmtTime  = (d, tz) => dayjs(d).tz(tz).format("h:mm A");
+const fmtFull  = (d, tz) => dayjs(d).tz(tz).format("MMM D, YYYY [at] h:mm A");
+
+export default function EventCard({ event, viewerTZ }) {
+  const activeTZ =
+    viewerTZ ||
+    event.timezone ||
+    event.profiles?.[0]?.timezone ||
+    "UTC";
+
   const [showEdit, setShowEdit] = useState(false);
-
-  const viewerTZ = (event.profiles && event.profiles[0] && event.profiles[0].timezone) || 'UTC';
-
-  const startStr = dayjs(event.startTimeUTC).tz(viewerTZ).format('MMM D, YYYY');
-  const startTime = dayjs(event.startTimeUTC).tz(viewerTZ).format('h:mm a');
-  const endStr = dayjs(event.endTimeUTC).tz(viewerTZ).format('MMM D, YYYY');
-  const endTime = dayjs(event.endTimeUTC).tz(viewerTZ).format('h:mm a');
-  const created = dayjs(event.createdAtUTC).tz(viewerTZ).format('MMM D, YYYY [at] h:mm a');
+  const [showLogs, setShowLogs] = useState(false);
 
   return (
-    <div style={{ borderTop: '1px solid #eee', padding: 12 }}>
-      <div style={{ display: 'flex', gap: 12 }}>
-        <div style={{ width: 48, height: 48, background: '#ddd', borderRadius: 24 }} />
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight:600 }}>{event.profiles.map(p => p.name).join(', ')}</div>
-          <div style={{ marginTop:6 }}>{startStr} · {startTime} <span style={{ marginLeft: 8 }}>📅</span></div>
-          <div>{endStr} · {endTime} <span style={{ marginLeft: 8 }}>📅</span></div>
-          <hr style={{ marginTop:10, marginBottom:10 }} />
-          <div style={{ color:'#666' }}>Created {created}</div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <button onClick={() => setShowEdit(true)}>✏️ Edit</button>
-          <button onClick={() => setShowLogs(true)}>📜 View Logs</button>
+    <div className="event-card">
+
+      <div className="event-user-row">
+        <UserIcon />
+        <span className="event-username">
+          {event.profiles.map(p => p.name).join(", ")}
+        </span>
+      </div>
+
+      <div className="event-row">
+        <CalendarIcon />
+        <div className="event-col">
+          <span className="event-date">
+            Start: {fmtDate(event.startTimeUTC, activeTZ)}
+          </span>
+          <div className="event-time-row">
+            <TimeIcon />
+            {fmtTime(event.startTimeUTC, activeTZ)}
+          </div>
         </div>
       </div>
 
-      {showEdit && <EditEventModal event={event} onClose={() => setShowEdit(false)} />}
-      {showLogs && <LogsModal eventId={event._id} onClose={() => setShowLogs(false)} />}
+      <div className="event-row">
+        <CalendarIcon />
+        <div className="event-col">
+          <span className="event-date">
+            End: {fmtDate(event.endTimeUTC, activeTZ)}
+          </span>
+          <div className="event-time-row">
+            <TimeIcon />
+            {fmtTime(event.endTimeUTC, activeTZ)}
+          </div>
+        </div>
+      </div>
+
+      <div className="event-line" />
+
+      <div className="event-meta">
+        Created: {fmtFull(event.createdAtUTC, activeTZ)}
+      </div>
+
+      {event.updatedAtUTC && (
+        <div className="event-meta" style={{ marginTop: 4 }}>
+          Updated: {fmtFull(event.updatedAtUTC, activeTZ)}
+        </div>
+      )}
+
+      <div className="event-line" />
+
+      <div className="event-btn-grid">
+        <button className="event-btn" onClick={() => setShowEdit(true)}>
+          <EditIcon /> Edit
+        </button>
+
+        <button className="event-btn" onClick={() => setShowLogs(true)}>
+          <LogsIcon /> View Logs
+        </button>
+      </div>
+
+      {showEdit && (
+        <div className="modal">
+          <div className="modal-inner">
+            <EditEventModal event={event} onClose={() => setShowEdit(false)} />
+          </div>
+        </div>
+      )}
+
+      {showLogs && (
+        <div className="modal">
+          <div className="modal-inner">
+           <LogsModal 
+            eventId={event._id} 
+            onClose={() => setShowLogs(false)} 
+            viewerTZ={activeTZ}
+          />
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }

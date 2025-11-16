@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import LeftHeader from "./components/LeftHeader";
-import ProfilesPanel from "./components/ProfilesPanel";
 import CreateEventPanel from "./components/CreateEventPanel";
 import EventsPanel from "./components/EventsPanel";
 import { useDispatch } from "react-redux";
@@ -9,14 +8,14 @@ import { fetchEvents } from "./features/events/eventsSlice";
 
 export default function App() {
   const dispatch = useDispatch();
+
   const [selectedProfile, setSelectedProfile] = useState(null);
 
-  // Load all profiles on first render
   useEffect(() => {
     dispatch(fetchProfiles());
   }, [dispatch]);
 
-  // Load events based on selected profile
+  
   useEffect(() => {
     if (selectedProfile) {
       dispatch(fetchEvents(selectedProfile._id));
@@ -26,16 +25,15 @@ export default function App() {
   }, [selectedProfile, dispatch]);
 
   return (
-    <div>
-      {/* Header Section */}
+    <div style={{marginTop:"50px",minHeight: "100vh", background: "#f8f9fc" }}>
+      
+   
       <LeftHeader
         selectedProfile={selectedProfile}
         setSelectedProfile={setSelectedProfile}
       />
 
-      {/* Main Section */}
-      <div
-        style={{
+      <div style={{
           width: "80%",
           margin: "20px auto",
           display: "flex",
@@ -43,12 +41,10 @@ export default function App() {
           gap: "20px",
         }}
       >
-        {/* LEFT → Create Event */}
+
         <div style={{ width: "50%" }}>
           <CreateEventPanel />
         </div>
-
-        {/* RIGHT → Events */}
         <div style={{ width: "50%" }}>
           <EventsPanel selectedProfile={selectedProfile} />
         </div>

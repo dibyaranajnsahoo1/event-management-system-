@@ -1,41 +1,50 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchEvents } from "../features/events/eventsSlice";
+
 import EventCard from "./EventCard";
+import TimeZoneSelector from "./TimeZoneSelector";
+import { fetchEvents } from "../features/events/eventsSlice";
 
 export default function EventsPanel({ selectedProfile }) {
-  const events = useSelector((s) => s.events.list);
   const dispatch = useDispatch();
 
-  // ⭐ Auto fetch and filter based on selected profile
+  const events = useSelector((state) => state.events.list || []);
+  const initialTZ =
+    selectedProfile?.timezone || "America/New_York";
+
+  const [viewerTZ, setViewerTZ] = useState(initialTZ);
+
   useEffect(() => {
-    dispatch(fetchEvents(selectedProfile ? selectedProfile._id : undefined));
+    setViewerTZ(selectedProfile?.timezone || "America/New_York");
+  }, [selectedProfile]);
+
+  useEffect(() => {
+    dispatch(fetchEvents(selectedProfile?._id));
   }, [dispatch, selectedProfile]);
 
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        padding: 12,
-        borderRadius: 8,
-        background: "#fff",
-      }}
-    >
-      <h3>Events</h3>
+    <div className="card">
+      <div style={{ justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <h3 style={{ margin: 0 }}>Events</h3>
+          <div className="" style={{ marginTop: 6 }}>
+            View in Timezone
+          </div>
+        </div>
 
-      <p style={{ marginTop: -5 }}>
-        Showing events for:{" "}
-        <b>{selectedProfile ? selectedProfile.name : "All Profiles"}</b>
-      </p>
+        <TimeZoneSelector value={viewerTZ} onChange={setViewerTZ} />
+      </div>
 
       <div style={{ marginTop: 12 }}>
-        {events.length === 0 && (
-          <div style={{ color: "#666" }}>No events available</div>
+        {events.length === 0 ? (
+          <div style={{ height: 220, textAlign:"center", marginTop:30 }}>
+            No events found
+          </div>
+        ) : (
+          events.map((ev) => (
+            <EventCard key={ev._id} event={ev} viewerTZ={viewerTZ} />
+          ))
         )}
-
-        {events.map((ev) => (
-          <EventCard key={ev._id} event={ev} />
-        ))}
       </div>
     </div>
   );

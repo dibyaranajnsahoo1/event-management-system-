@@ -1,0 +1,139 @@
+.spdm-container {
+  position: relative;
+  width: 100%;
+}
+
+.spdm-select-box {
+  padding: 10px 14px;
+  cursor: pointer;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.spdm-select-box:hover {
+  background: var(--purple);
+  color: white;
+}
+.spdm-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 240px;
+  z-index: 200;
+  padding: 10px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+.spdm-search-wrapper {
+  position: relative;
+  width: 100%;
+}
+.spdm-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 9px;
+  font-size: 15px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+.spdm-input {
+  width: 100%;
+  padding: 9px 12px;
+  padding-left: 36px;
+  border: none;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+.spdm-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+ 
+}
+
+.spdm-input2 {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  transition: border 0.15s ease, background 0.15s ease;
+}
+
+.spdm-input2:focus {
+  border-color: var(--purple);
+  outline: none;
+  background: #faf5ff;
+}
+
+.spdm-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.spdm-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  transition: 0.2s;
+  color: #111;
+}
+
+.spdm-item:hover {
+  background: var(--purple);
+  color: #fff;
+}
+.spdm-selected {
+  background: var(--purple);
+  color: #fff;
+}
+.spdm-check {
+  width: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+.spdm-name {
+  font-weight: 600;
+}
+.spdm-add-btn {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.2s;
+ 
+}
+.spdm-add-btn:hover {
+  background: var(--purple);
+  color: #fff;
+  border-color: var(--purple);
+}
+.spdm-add-row {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  align-items: center;
+}
+.spdm-plus {
+  font-size: 18px;
+}
+.spdm-add-text {
+  font-weight: 600;
+}
