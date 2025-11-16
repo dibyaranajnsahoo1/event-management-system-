@@ -39,6 +39,15 @@ export default function SelectProfileDropdown({ selectedProfile, setSelectedProf
   const handleAdd = async () => {
     if (!newName.trim()) return;
 
+    const alreadyExists = profiles.some(
+      (p) => p.name.trim().toLowerCase() === newName.trim().toLowerCase()
+    );
+
+    if (alreadyExists) {
+      alert("Profile already exists!");
+      return;
+    }
+
     const res = await dispatch(createProfile(newName.trim()))
       .unwrap()
       .catch(() => null);
@@ -62,9 +71,9 @@ export default function SelectProfileDropdown({ selectedProfile, setSelectedProf
 
       {open && (
         <div className="spd-dropdown">
+
           <div className="spd-search-wrapper">
-            <span className="spd-search-icon">
-              <SearchIcon /></span>
+            <span className="spd-search-icon"><SearchIcon /></span>
 
             <input
               className="spd-input"
@@ -74,7 +83,8 @@ export default function SelectProfileDropdown({ selectedProfile, setSelectedProf
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-           <div className="event-line" />
+
+          <div className="event-line" />
 
           <div className="spd-list">
             {filtered.map((p) => {
@@ -95,7 +105,8 @@ export default function SelectProfileDropdown({ selectedProfile, setSelectedProf
               );
             })}
           </div>
-           <div className="event-line" />
+
+          <div className="event-line" />
 
           {!adding ? (
             <div className="spd-add-btn" onClick={() => setAdding(true)}>

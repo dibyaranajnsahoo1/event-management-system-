@@ -11,6 +11,7 @@ export default function SelectProfileDropdownMulti({ value, onChange }) {
   const [search, setSearch] = useState("");
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
+
   const SearchIcon = () => (
     <svg width="16" height="16" fill="none" stroke="#111" strokeWidth="2" viewBox="0 0 24 24">
       <circle cx="11" cy="11" r="8" />
@@ -31,14 +32,26 @@ export default function SelectProfileDropdownMulti({ value, onChange }) {
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
+  // Filter profiles
   const filtered = profiles.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  // ⭐ Prevent duplicate names
   const handleAdd = async () => {
-    if (!newName.trim()) return;
+    const name = newName.trim();
+    if (!name) return;
 
-    const res = await dispatch(createProfile(newName.trim()))
+    const exists = profiles.some(
+      (p) => p.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (exists) {
+      alert("Profile already exists!");
+      return;
+    }
+
+    const res = await dispatch(createProfile(name))
       .unwrap()
       .catch(() => null);
 
@@ -69,7 +82,9 @@ export default function SelectProfileDropdownMulti({ value, onChange }) {
       {open && (
         <div className="spdm-dropdown">
           <div className="spdm-search-wrapper">
-            <span className="spdm-search-icon"><SearchIcon/></span>
+            <span className="spdm-search-icon">
+              <SearchIcon />
+            </span>
 
             <input
               className="spdm-input"
@@ -96,6 +111,7 @@ export default function SelectProfileDropdownMulti({ value, onChange }) {
               );
             })}
           </div>
+
           <div className="event-line" />
 
           {!adding ? (
@@ -112,7 +128,8 @@ export default function SelectProfileDropdownMulti({ value, onChange }) {
                 onChange={(e) => setNewName(e.target.value)}
               />
 
-              <button className="btn btn-purple" onClick={handleAdd}>Add
+              <button className="btn btn-purple" onClick={handleAdd}>
+                Add
               </button>
             </div>
           )}
