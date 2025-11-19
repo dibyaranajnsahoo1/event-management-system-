@@ -71,10 +71,8 @@ export default function SelectProfileDropdown({ selectedProfile, setSelectedProf
 
       {open && (
         <div className="spd-dropdown">
-
           <div className="spd-search-wrapper">
             <span className="spd-search-icon"><SearchIcon /></span>
-
             <input
               className="spd-input"
               style={{ paddingLeft: 34 }}
@@ -95,7 +93,11 @@ export default function SelectProfileDropdown({ selectedProfile, setSelectedProf
                   key={p._id}
                   className={`spd-item ${selected ? "spd-selected" : ""}`}
                   onClick={() => {
-                    setSelectedProfile(p);
+                    if (selectedProfile?._id === p._id) {
+                      setSelectedProfile(null);
+                    } else {
+                      setSelectedProfile(p);
+                    }
                     setAdding(false);
                   }}
                 >
